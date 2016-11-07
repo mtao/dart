@@ -1129,7 +1129,7 @@ void InverseKinematics::Analytical::computeGradient(
     const Eigen::Isometry3d& postTf = mIK->getNode()->getWorldTransform();
     Eigen::Vector6d postError;
     postError.tail<3>() = postTf.translation() - desiredTf.translation();
-    Eigen::AngleAxisd aaError(postTf.linear() * desiredTf.linear().transpose());
+    Eigen::AngleAxisd aaError((postTf.linear() * desiredTf.linear().transpose()).eval());
     postError.head<3>() = aaError.angle() * aaError.axis();
 
     double norm = postError.norm();
