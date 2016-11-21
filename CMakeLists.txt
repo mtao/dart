@@ -17,6 +17,9 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
+SET(DART_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+SET(DART_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
 # Simplify variable reference and escape sequence evaluation. This was added in
 # CMake 3.1. Explicitly setting this policy is necessary to suppress a warning
 # in CMake 3.1 and above.
@@ -30,7 +33,7 @@ set(LIBRARY_INSTALL_DIR "lib")
 set(CONFIG_INSTALL_DIR "share/${PROJECT_NAME}/cmake")
 
 set(CMAKE_DEBUG_POSTFIX "d")
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${DART_SOURCE_DIR}/cmake")
 
 include(DARTMacros)
 
@@ -137,7 +140,7 @@ include(DARTFindDependencies)
 # Include directories
 #===============================================================================
 include_directories(BEFORE ${PROJECT_SOURCE_DIR})
-include_directories("${CMAKE_BINARY_DIR}")
+include_directories("${DART_BINARY_DIR}")
 
 #===============================================================================
 # Check for non-case-sensitive filesystems
@@ -242,8 +245,8 @@ if(DART_VERBOSE)
   elseif(${CMAKE_BUILD_TYPE_UPPERCASE} STREQUAL "PROFILE")
     message(STATUS "CXX_FLAGS_PROFILE: ${CMAKE_CXX_FLAGS_PROFILE}")
   endif()
-  message(STATUS "CMAKE_SOURCE_DIR : ${CMAKE_SOURCE_DIR}")
-  message(STATUS "CMAKE_BINARY_DIR : ${CMAKE_BINARY_DIR}")
+  message(STATUS "DART_SOURCE_DIR : ${DART_SOURCE_DIR}")
+  message(STATUS "DART_BINARY_DIR : ${DART_BINARY_DIR}")
 endif(DART_VERBOSE)
 
 #===============================================================================
@@ -344,9 +347,9 @@ get_property(PACKAGE_INCLUDE_DIRS GLOBAL
 
 # Generate the DART CMake Config and version files
 include(CMakePackageConfigHelpers)
-set(DART_CONFIG_IN ${CMAKE_SOURCE_DIR}/cmake/${PROJECT_NAME_UPPERCASE}Config.cmake.in)
-set(DART_CONFIG_OUT ${CMAKE_BINARY_DIR}/${PROJECT_NAME_UPPERCASE}Config.cmake)
-set(DART_VERSION_OUT ${CMAKE_BINARY_DIR}/cmake/${PROJECT_NAME_UPPERCASE}ConfigVersion.cmake)
+set(DART_CONFIG_IN ${DART_SOURCE_DIR}/cmake/${PROJECT_NAME_UPPERCASE}Config.cmake.in)
+set(DART_CONFIG_OUT ${DART_BINARY_DIR}/${PROJECT_NAME_UPPERCASE}Config.cmake)
+set(DART_VERSION_OUT ${DART_BINARY_DIR}/cmake/${PROJECT_NAME_UPPERCASE}ConfigVersion.cmake)
 if(DART_VERBOSE)
   message(STATUS ${DART_CONFIG_OUT})
   message(STATUS ${DART_VERSION_OUT})
@@ -367,8 +370,8 @@ install(
   DESTINATION "${CONFIG_INSTALL_DIR}")
 
 # Generate the DART pkg-config
-set(PC_CONFIG_IN ${CMAKE_SOURCE_DIR}/cmake/dart.pc.in)
-set(PC_CONFIG_OUT ${CMAKE_BINARY_DIR}/cmake/dart.pc)
+set(PC_CONFIG_IN ${DART_SOURCE_DIR}/cmake/dart.pc.in)
+set(PC_CONFIG_OUT ${DART_BINARY_DIR}/cmake/dart.pc)
 if(DART_VERBOSE)
   message(STATUS ${PC_CONFIG_OUT})
 endif()
@@ -431,14 +434,14 @@ if(CLANG_FORMAT_EXECUTABLE)
                       COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${formatting_files}
                       COMMAND ${CMAKE_COMMAND} -E echo "Done."
                       DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dart)
+                      WORKING_DIRECTORY ${DART_SOURCE_DIR}/dart)
 
     add_custom_target(check-format
                       COMMAND ${CMAKE_COMMAND} -E echo "Checking ${formatting_files_length} files... "
-                      COMMAND ${CMAKE_SOURCE_DIR}/tools/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
+                      COMMAND ${DART_SOURCE_DIR}/tools/check_format.sh ${CLANG_FORMAT_EXECUTABLE} ${formatting_files}
                       COMMAND ${CMAKE_COMMAND} -E echo "Done."
                       DEPENDS ${CLANG_FORMAT_EXECUTABLE}
-                      WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/dart)
+                      WORKING_DIRECTORY ${DART_SOURCE_DIR}/dart)
   else()
     add_custom_target(format
                       COMMAND ${CMAKE_COMMAND} -E echo "Warning: Not found any source files to format.")
